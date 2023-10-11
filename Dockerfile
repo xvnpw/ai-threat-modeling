@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM python@8e5795ecb82069a0cf69b6c1f655ae9ea9f9262c11cbe05eaba0d05e671dd1f2
+FROM python@sha256:88880bc85b0e3342ff416c796df7ad9079b2805f92a6ebfc5c84ac582fb25de9
 
 WORKDIR /app
 
