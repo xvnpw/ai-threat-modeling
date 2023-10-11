@@ -1,6 +1,6 @@
 # AI Threat Modeling
 
-[![Python package](https://github.com/xvnpw/ai-threat-modeling-action/actions/workflows/build.yaml/badge.svg)](https://github.com/xvnpw/ai-threat-modeling-action/actions/workflows/build.yaml)
+[![Python package](https://github.com/xvnpw/ai-threat-modeling/actions/workflows/build.yaml/badge.svg)](https://github.com/xvnpw/ai-threat-modeling/actions/workflows/build.yaml)
 
 🤖 You can use this scripts to generate AI featured content for threat modeling and security review.
 
@@ -11,7 +11,7 @@ usage: ai-tm.py [-h] [--provider {openai,openrouter}] [--inputs [INPUTS]] [--out
                 [--temperature TEMPERATURE] [-v VERBOSE] [-d DEBUG] [-usos USER_STORY_OUTPUT_SUFFIX] [-t TEMPLATE_DIR]
                 {project,architecture,user-story}
 
-AI featured threat modeling and security review action
+AI featured threat modeling and security review
 
 positional arguments:
   {project,architecture,user-story}
@@ -47,17 +47,6 @@ Experimental. Use on your own risk
 - Python
 - LLM Tooling: [Langchain](https://github.com/hwchase17/langchain)
 - LLM: [OpenAI GPT](https://openai.com/), [OpenRouter](https://openrouter.ai/)
-
-## Fork
-
-Fork this project. Edit files and release action:
-
-```
-git add .
-git commit -m "My first action is ready"
-git tag -a -m "My first action release" v1
-git push --follow-tags
-```
 
 ## Privacy
 
