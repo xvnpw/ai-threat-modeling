@@ -1,5 +1,5 @@
 # Container image that runs your code
-FROM python:3
+FROM python@280f63c69e2afdc7344d98269522eccd8c6168b8799e4d855dd07d820d4451d2
 
 WORKDIR /app
 

@@ -18,7 +18,7 @@ if not BASEDIR:
 
 parser = argparse.ArgumentParser(
     prog='ai-tm.py',
-    description='AI featured threat modeling and security review action',
+    description='AI featured threat modeling and security review',
     epilog='Experimental. Use on your own risk'
 )
 parser.add_argument("type", type=str, choices=['project', 'architecture', 'user-story'], help="Type of feature")
