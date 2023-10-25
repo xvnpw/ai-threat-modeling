@@ -48,15 +48,15 @@ options:
   -h, --help            show this help message and exit
   --provider {openai,openrouter}
                         provider of LLM API, default: openai
-  --inputs [INPUTS]     json array of paths to input files
+  --inputs [INPUTS]     file path or json array of paths to input files (depends on feature)
   --output [OUTPUT]     path to output file
   -ai [ARCHITECTURE_INPUTS], --architecture-inputs [ARCHITECTURE_INPUTS]
                         for user-story only: json array of paths to architecture files
   -atmi [ARCHITECTURE_THREAT_MODEL_INPUT], --architecture-threat-model-input [ARCHITECTURE_THREAT_MODEL_INPUT]
                         for user-story only: path to architecture threat model file
-  --model MODEL         type of ChatGPT model, default: gpt-3.5-turbo
+  --model MODEL         type of ChatGPT model, default: gpt-4
   --temperature TEMPERATURE
-                        sampling temperature for a model, default 0
+                        sampling temperature for a model, default 0.2
   -v, --verbose         turn on verbose messages, default: false
   -d, --debug           turn on debug messages, default: false
   -usos USER_STORY_OUTPUT_SUFFIX, --user-story-output-suffix USER_STORY_OUTPUT_SUFFIX
@@ -67,6 +67,17 @@ options:
   --create-draft        create draft of input (e.g. architecture) based on files (e.g. README.md,controllers.go,swagger.yaml), default: false
 
 Experimental. Use on your own risk
+```
+
+## Features
+
+### Review Architecture Description for Project
+
+```bash
+$ python ai-tm.py architecture --review --inputs <path_to_project>/ARCHITECTURE.md --output ARCHITECTURE_REVIEW.md --verbose
+INFO:root:review of architecture started...
+INFO:root:finished waiting on llm response
+INFO:root:response written to file
 ```
 
 ## 🚀 Tech Stack
