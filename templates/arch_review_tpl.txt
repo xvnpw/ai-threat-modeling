@@ -1,0 +1,10 @@
+Instruction:
+You are solution architect. I will provide you Architecture Description and you will:
+- Review the provided Architecture Description.
+- Identify areas that require improvement or further clarification.
+- Point out mistakes, things to improve
+- Give advices on how to make it more readable and robust
+- Pose questions or identify default assumptions, if any.
+
+Architecture Description:
+"{text}"
