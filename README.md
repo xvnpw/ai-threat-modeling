@@ -16,7 +16,7 @@ pip install -r requirements.txt
 
 ## Configuration
 
-Environment variables:
+Use environment variables to set API keys. Without API keys you **cannot** use selected provider:
 
 ```
 # OpenAI API key
