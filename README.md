@@ -14,6 +14,22 @@ cd ai-threat-modeling
 pip install -r requirements.txt
 ```
 
+## Configuration
+
+Environment variables:
+
+```
+# OpenAI API key
+# Optional. Only if want to use openai provider
+# Get a key from https://platform.openai.com/account/api-keys
+OPENAI_API_KEY
+
+# Open Router API key
+# Optional. Only if want to use openrouter provider
+# Get a key from https://openrouter.ai/keys
+OPENROUTER_API_KEY
+```
+
 ## Usage
 
 ```bash
@@ -48,7 +64,7 @@ options:
   -t TEMPLATE_DIR, --template-dir TEMPLATE_DIR
                         path to template dir, default: ./templates
   --review              review input files using LLM, default: false
-  --create-draft        create draft based on input files, default: false
+  --create-draft        create draft of input (e.g. architecture) based on files (e.g. README.md,controllers.go,swagger.yaml), default: false
 
 Experimental. Use on your own risk
 ```

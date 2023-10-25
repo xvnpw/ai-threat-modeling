@@ -14,8 +14,7 @@ import constants
     
 BASEDIR = os.environ.get('GITHUB_WORKSPACE')
 if not BASEDIR:
-    print('GITHUB_WORKSPACE environment variable not set.')
-    exit(1)
+    BASEDIR=os.getcwd()
         
 def main():
     parser = argparse.ArgumentParser(
@@ -36,7 +35,7 @@ def main():
     parser.add_argument("-usos", "--user-story-output-suffix", type=str, help="for user-story only: suffix that will be added to input file name to create output file, default: _SECURITY", default="_SECURITY")
     parser.add_argument("-t", "--template-dir", type=str, help="path to template dir, default: ./templates", default="./templates")
     parser.add_argument("--review", action='store_true', help="review input files using LLM, default: false", default="false")
-    parser.add_argument("--create-draft", action='store_true', help="create draft based on input files, default: false", default="false")
+    parser.add_argument("--create-draft", action='store_true', help="create draft of input (e.g. architecture) based on files (e.g. README.md,controllers.go,swagger.yaml), default: false", default="false")
 
     args = parser.parse_args()
 
