@@ -31,19 +31,19 @@ def main():
     parser.add_argument("-atmi", "--architecture-threat-model-input", type=str, help="for user-story only: path to architecture threat model file", nargs='?')
     parser.add_argument("--model", type=str, help="type of ChatGPT model, default: gpt-3.5-turbo", default="gpt-3.5-turbo")
     parser.add_argument("--temperature", type=float, help="sampling temperature for a model, default 0", default=0)
-    parser.add_argument('-v', '--verbose', type=str, help="turn on verbose messages, default: false", default="false")
-    parser.add_argument('-d', '--debug', type=str, help="turn on debug messages, default: false", default="false")
+    parser.add_argument('-v', '--verbose', action='store_true', help="turn on verbose messages, default: false", default="false")
+    parser.add_argument('-d', '--debug', action='store_true', help="turn on debug messages, default: false", default="false")
     parser.add_argument("-usos", "--user-story-output-suffix", type=str, help="for user-story only: suffix that will be added to input file name to create output file, default: _SECURITY", default="_SECURITY")
     parser.add_argument("-t", "--template-dir", type=str, help="path to template dir, default: ./templates", default="./templates")
-    parser.add_argument("--review", type=str, help="review input files using LLM, default: false", default="false")
-    parser.add_argument("--create-draft", type=str, help="create draft based on input files, default: false", default="false")
+    parser.add_argument("--review", action='store_true', help="review input files using LLM, default: false", default="false")
+    parser.add_argument("--create-draft", action='store_true', help="create draft based on input files, default: false", default="false")
 
     args = parser.parse_args()
 
-    if args.verbose == 'true':
+    if args.verbose is True:
         logging.basicConfig(level=logging.INFO)
         
-    if args.debug == 'true':
+    if args.debug is True:
         logging.basicConfig(level=logging.DEBUG)
         
     logging.debug(f'running for feature: {args.type}...')
@@ -61,7 +61,7 @@ def main():
             output = Path(BASEDIR).joinpath(args.output)
         analyze_project(args, inputs, output)
 
-    if args.type == "architecture" and args.review == 'true':
+    if args.type == "architecture" and args.review is True:
         if not args.inputs:
             inputs = Path(BASEDIR).joinpath(constants.ARCHITECTURE_INPUT)
         else:

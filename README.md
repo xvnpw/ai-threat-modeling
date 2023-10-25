@@ -41,17 +41,14 @@ options:
   --model MODEL         type of ChatGPT model, default: gpt-3.5-turbo
   --temperature TEMPERATURE
                         sampling temperature for a model, default 0
-  -v VERBOSE, --verbose VERBOSE
-                        turn on verbose messages, default: false
-  -d DEBUG, --debug DEBUG
-                        turn on debug messages, default: false
+  -v, --verbose         turn on verbose messages, default: false
+  -d, --debug           turn on debug messages, default: false
   -usos USER_STORY_OUTPUT_SUFFIX, --user-story-output-suffix USER_STORY_OUTPUT_SUFFIX
                         for user-story only: suffix that will be added to input file name to create output file, default: _SECURITY
   -t TEMPLATE_DIR, --template-dir TEMPLATE_DIR
                         path to template dir, default: ./templates
-  --review REVIEW       review input files using LLM, default: false
-  --create-draft CREATE_DRAFT
-                        create draft based on input files, default: false
+  --review              review input files using LLM, default: false
+  --create-draft        create draft based on input files, default: false
 
 Experimental. Use on your own risk
 ```
