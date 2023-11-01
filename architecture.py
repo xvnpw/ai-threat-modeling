@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 from typing import List
+import json
 
 from langchain.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
@@ -104,7 +105,7 @@ class ArchitectureAnalyzer:
         parser = PydanticOutputParser(pydantic_object=ThreatList)
         
         prompt = PromptTemplate.from_file(template_file=f"{args.template_dir}/arch_threat_model_tpl.txt", 
-            input_variables=["plan", "text", "dataflow"],
+            input_variables=["plan", "text", "dataflow", "assumptions"],
             partial_variables={"format_instructions": parser.get_format_instructions()})
         
         # Define LLM chain
@@ -118,10 +119,16 @@ class ArchitectureAnalyzer:
             llm_chain=llm_chain, document_variable_name="text"
         )
         
+        assumptions = ""
+        if args.assumptions:
+            assumptions_array = args.assumptions.split(",")
+            assumptions = "\n".join(assumptions_array)
+            assumptions = assumptions.strip()
+        
         gen_threats_all = []
         for idx, df in enumerate(data_flows):
             with get_openai_callback() as cb:
-                ret = stuff_chain.run(plan=threat_modeling_plan, input_documents=docs_all, dataflow=df)
+                ret = stuff_chain.run(plan=threat_modeling_plan, input_documents=docs_all, dataflow=df, assumptions=assumptions)
                 logging.debug(cb)
             logging.info(f"({idx+1} of {len(data_flows)}) finished waiting on llm response")
             

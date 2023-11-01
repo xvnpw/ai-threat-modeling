@@ -36,6 +36,7 @@ def main():
     parser.add_argument("-t", "--template-dir", type=str, help="path to template dir, default: ./templates", default="./templates")
     parser.add_argument("--review", action='store_true', help="review input files using LLM, default: false", default="false")
     parser.add_argument("--create-draft", action='store_true', help="create draft of input (e.g. architecture) based on files (e.g. README.md,controllers.go,swagger.yaml), default: false", default="false")
+    parser.add_argument("--assumptions", type=str, help="json array of assumptions to add to prompt", nargs='?')
 
     args = parser.parse_args()
 
