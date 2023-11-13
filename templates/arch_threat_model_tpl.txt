@@ -6,7 +6,6 @@ Instruction:
 - Return list of threats for DATA FLOW in form of valid json
 - I will provide you DATA FLOW name
 - ARCHITECTURE DESCRIPTION will be in markdown format
-- I will provide you zero or more ADDITIONAL ASSUMPTIONS to consider for threats 
 
 {format_instructions}
 
@@ -18,6 +17,3 @@ ARCHITECTURE DESCRIPTION:
 
 DATA FLOW:
 "{dataflow}"
-
-ADDITIONAL ASSUMPTIONS:
-{assumptions}
