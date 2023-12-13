@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 from typing import List
-import json
 
 from langchain.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
@@ -20,19 +19,20 @@ from llms import LLMWrapper
 
 class DataFlow(BaseModel):
     data_flow: str = Field(description="Name of data flow, e.g. Data flow 1: Client -> Element A, Data flow 2: Element A -> Element B")
-    external_person: bool = Field(description="Flag that informs whether or not data flow contains external person.")
     
 class DataFlowList(BaseModel):
     data_flows: List[DataFlow] = Field(description="List of data flows that are important for security of system.")
 
 class Threat(BaseModel):
-    threat_id: int = Field(description="id of threat")
+    threat_id: int = Field(description="id of threat, e.g. 0001, 0002, ...")
     component_name: str = Field(description="Name of component, example: Service A, API Gateway, Database B, Microservice X, Queue Z")
     threat_name: str = Field(description="Name of threat. Should be detailed and specific, e.g. Attacker bypasses weak authentication and gains unauthorized access to Component A")
-    stride_category: str = Field(description="STRIDE category (e.g. Spoofing)")
+    stride_category: str = Field(description="STRIDE category, e.g. Spoofing, ...")
     applicability_explanation: str = Field(description="Explanation whether or not this threat is already mitigated in architecture")
+    how_mitigated: str = Field(description="""How threat is already mitigated in architecture - explain if this threat is already mitigated 
+in ARCHITECTURE DESCRIPTION or nit. If not implemented return 'no implemented'. Give reference and quite to ARCHITECTURE DESCRIPTION.""")
     mitigation: str = Field(description="Mitigation that can be applied for this threat. Detailed and related to context")
-    risk_severity: str = Field(description="Risk severity")
+    risk_severity: str = Field(description="Risk severity, e.g. Low, Medium, High, Critical")
     
 class ThreatList(BaseModel):
     data_flow: str = Field(description="Name of data flow, e.g. Data flow 1: Client -> Component A, Data flow 2: Component A -> Component B")
@@ -79,8 +79,7 @@ class DataFlowAnalyzer:
         gen_data_flows = fixing_parser.parse(ret)
         logging.debug(f"got following data flows: {gen_data_flows}")
         
-        gen_data_flows = [df for df in gen_data_flows.data_flows if df.external_person is False]
-        gen_data_flows_names = [df.data_flow for df in gen_data_flows]
+        gen_data_flows_names = [df.data_flow for df in gen_data_flows.data_flows]
         
         return {"data_flows" : gen_data_flows_names, "threat_modeling_plan" : threat_modeling_plan}
     
@@ -143,11 +142,11 @@ class ArchitectureAnalyzer:
             for dataflow in gen_threats_all:
                 f.write(f'### {dataflow.data_flow}\n\n')
                 
-                f.write("| Threat Id | Component name | Threat Name | STRIDE category | Explanation | Mitigations | Risk severity |\n")
-                f.write("| --- | --- | --- | --- | --- | --- | --- |\n")
+                f.write("| Threat Id | Component name | Threat Name | STRIDE category | Explanation | How threat is already mitigated in architecture | Mitigations | Risk severity |\n")
+                f.write("| --- | --- | --- | --- | --- | --- | --- | --- |\n")
                 
                 for t in dataflow.threats:
-                    f.write(f'| {t.threat_id} | {t.component_name} | {t.threat_name} | {t.stride_category} | {t.applicability_explanation} | {t.mitigation} | {t.risk_severity} |\n')
+                    f.write(f'| {t.threat_id} | {t.component_name} | {t.threat_name} | {t.stride_category} | {t.applicability_explanation} | {t.how_mitigated} | {t.mitigation} | {t.risk_severity} |\n')
                     
                 f.write("\n\n")
                     

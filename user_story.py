@@ -8,8 +8,7 @@ from langchain.chains.llm import LLMChain
 from langchain.document_loaders import TextLoader
 from langchain.output_parsers import OutputFixingParser, PydanticOutputParser
 from langchain.prompts import PromptTemplate, load_prompt
-from langchain.prompts.chat import (AIMessagePromptTemplate,
-                                    ChatPromptTemplate,
+from langchain.prompts.chat import (ChatPromptTemplate,
                                     HumanMessagePromptTemplate)
 from langchain.schema.messages import AIMessage
 from pydantic import BaseModel, Field
@@ -57,16 +56,8 @@ def analyze_user_story(args, input: Path, architecture_inputs: [Path], architect
         
     messages = [
         HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/user_story_intro_tpl.yaml")),
-        AIMessagePromptTemplate.from_template_file(template_file=f"{args.template_dir}/user_story_ai_confirmation_step1_tpl.txt", input_variables=[]),
-        HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/user_story_doc_tpl.yaml")),
-        AIMessagePromptTemplate.from_template_file(template_file=f"{args.template_dir}/user_story_ai_confirmation_step2_tpl.txt", input_variables=[]),
-        HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/user_story_arch_doc_tpl.yaml")),
-        AIMessagePromptTemplate.from_template_file(template_file=f"{args.template_dir}/user_story_ai_confirmation_step3_tpl.txt", input_variables=[]),
-        HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/user_story_arch_tm_doc_tpl.yaml")),
     ]
     chat_prompt_template = ChatPromptTemplate.from_messages(messages)
-
-    parser = PydanticOutputParser(pydantic_object=AcceptanceCriteriaList)
 
     # Define LLM chain
     logging.debug(f'using temperature={args.temperature} and model={args.model}')
@@ -89,6 +80,8 @@ def analyze_user_story(args, input: Path, architecture_inputs: [Path], architect
     chat_prompt_template = ChatPromptTemplate.from_messages(messages)
     
     llm_chain = LLMChain(llm=llm, prompt=chat_prompt_template)
+    
+    parser = PydanticOutputParser(pydantic_object=AcceptanceCriteriaList)
     
     with get_openai_callback() as cb:
         architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
