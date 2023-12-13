@@ -28,7 +28,7 @@ class Threat(BaseModel):
     component_name: str = Field(description="Name of component, example: Service A, API Gateway, Database B, Microservice X, Queue Z")
     threat_name: str = Field(description="Name of threat. Should be detailed and specific, e.g. Attacker bypasses weak authentication and gains unauthorized access to Component A")
     stride_category: str = Field(description="STRIDE category, e.g. Spoofing, ...")
-    applicability_explanation: str = Field(description="Explanation whether or not this threat is already mitigated in architecture")
+    applicability_explanation: str = Field(description="Why this threat is important for component in context of ARCHITECTURE DESCRIPTION")
     how_mitigated: str = Field(description="""How threat is already mitigated in architecture - explain if this threat is already mitigated 
 in ARCHITECTURE DESCRIPTION or nit. If not implemented return 'no implemented'. Give reference and quite to ARCHITECTURE DESCRIPTION.""")
     mitigation: str = Field(description="Mitigation that can be applied for this threat. Detailed and related to context")
