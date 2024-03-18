@@ -1,7 +1,6 @@
 import logging
 from pathlib import Path
 
-from langchain_community.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
 from langchain_community.document_loaders import TextLoader

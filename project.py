@@ -2,7 +2,6 @@ from langchain_community.document_loaders import TextLoader
 from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-from langchain_community.callbacks import get_openai_callback
 from llms import LLMWrapper
 
 import logging
