@@ -1,10 +1,10 @@
 import logging
 from pathlib import Path
 
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.prompts import PromptTemplate
 
 class ArchitectureReviewer:
@@ -32,12 +32,10 @@ class ArchitectureReviewer:
             llm_chain=llm_chain, document_variable_name="text"
         )
         
-        with get_openai_callback() as cb:
-            ret = stuff_chain.run(arch_doc)
-            logging.debug(cb)
+        ret = stuff_chain.invoke(arch_doc)
         logging.info("finished waiting on llm response")
             
-        return self._saveOutput(ret, output)
+        return self._saveOutput(ret["output_text"], output)
 
     def _saveOutput(self, review: str, output):
         with open(str(output.resolve()), "w") as f:

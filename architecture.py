@@ -2,10 +2,10 @@ import logging
 from pathlib import Path
 from typing import List
 
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.output_parsers import OutputFixingParser, PydanticOutputParser
 from langchain.prompts import PromptTemplate, load_prompt
 from langchain.prompts.chat import (AIMessagePromptTemplate,
@@ -58,25 +58,21 @@ class DataFlowAnalyzer:
         llm = LLMWrapper(args).create()
         llm_chain = LLMChain(llm=llm, prompt=chat_prompt_template)
         
-        with get_openai_callback() as cb:
-            architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
+        architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
+        
+        threat_modeling_plan = llm_chain.invoke(input={"text":architecture_docs_loaded})
+        logging.info("finished waiting on llm response - plan of threat model")
             
-            threat_modeling_plan = llm_chain.run(text=architecture_docs_loaded)
-            logging.debug(cb)
-            logging.info("finished waiting on llm response - plan of threat model")
-            
-        messages.append(AIMessage(content=threat_modeling_plan))
+        messages.append(AIMessage(content=threat_modeling_plan["text"]))
         messages.append(HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/arch_data_flows_step3_tpl.yaml")))
         chat_prompt_template = ChatPromptTemplate.from_messages(messages)
         
         llm_chain = LLMChain(llm=llm, prompt=chat_prompt_template)
-        with get_openai_callback() as cb:
-            ret = llm_chain.run(text=architecture_docs_loaded, format_instructions=parser.get_format_instructions())
-            logging.debug(cb)
-            logging.info("finished waiting on llm response - data flows")
+        ret = llm_chain.invoke(input={"text":architecture_docs_loaded, "format_instructions":parser.get_format_instructions()})
+        logging.info("finished waiting on llm response - data flows")
             
         fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
-        gen_data_flows = fixing_parser.parse(ret)
+        gen_data_flows = fixing_parser.parse(ret["text"])
         logging.debug(f"got following data flows: {gen_data_flows}")
         
         gen_data_flows_names = [df.data_flow for df in gen_data_flows.data_flows]
@@ -120,13 +116,11 @@ class ArchitectureAnalyzer:
         
         gen_threats_all = []
         for idx, df in enumerate(data_flows):
-            with get_openai_callback() as cb:
-                ret = stuff_chain.run(plan=threat_modeling_plan, input_documents=docs_all, dataflow=df)
-                logging.debug(cb)
+            ret = stuff_chain.invoke(input={"plan":threat_modeling_plan, "input_documents":docs_all, "dataflow":df})
             logging.info(f"({idx+1} of {len(data_flows)}) finished waiting on llm response")
             
             fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
-            gen_threats = fixing_parser.parse(ret)
+            gen_threats = fixing_parser.parse(ret["output_text"])
             
             # review
             #gen_threats_reviewed = self.threat_model_reviewer.review_threat_model(args, docs_all, gen_threats.json())
@@ -175,11 +169,9 @@ class ThreatModelReviewer:
             llm_chain=llm_chain, document_variable_name="text"
         )
         
-        with get_openai_callback() as cb:
-            ret = stuff_chain.run(current_threat_model=threat_model_for_data_flow, input_documents=architecture_docs_all)
-            logging.debug(cb)
+        ret = stuff_chain.invoke(input={"current_threat_model":threat_model_for_data_flow, "input_documents":architecture_docs_all})
         logging.info("(finished waiting on threat model review")
         
         fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
-        gen_threats = fixing_parser.parse(ret)
+        gen_threats = fixing_parser.parse(ret["text"])
         return gen_threats

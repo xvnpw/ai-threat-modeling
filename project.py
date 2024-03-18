@@ -1,8 +1,8 @@
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.chains.llm import LLMChain
 from langchain.prompts import PromptTemplate
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from llms import LLMWrapper
 
 import logging
@@ -29,13 +29,12 @@ def analyze_project(args, inputs: [Path], output: Path):
         llm_chain=llm_chain, document_variable_name="text"
     )
 
-    with get_openai_callback() as cb:
-        ret = stuff_chain.run(docs_all)
-        logging.debug(cb)
+    ret = stuff_chain.invoke(docs_all)
+    
     logging.info("finished waiting on llm response")
     
     f = open(str(output.resolve()), "w")
     f.write("# (AI Generated) High Level Security and Privacy Requirements\n\n")
-    f.write(ret)
+    f.write(ret["output_text"])
     f.close()
     logging.info("response written to file")

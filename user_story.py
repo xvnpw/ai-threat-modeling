@@ -2,10 +2,10 @@ import logging
 from pathlib import Path
 from typing import List
 
-from langchain.callbacks import get_openai_callback
+from langchain_community.callbacks import get_openai_callback
 from langchain.chains.combine_documents.stuff import StuffDocumentsChain
 from langchain.chains.llm import LLMChain
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.output_parsers import OutputFixingParser, PydanticOutputParser
 from langchain.prompts import PromptTemplate, load_prompt
 from langchain.prompts.chat import (ChatPromptTemplate,
@@ -64,18 +64,16 @@ def analyze_user_story(args, input: Path, architecture_inputs: [Path], architect
     llm = LLMWrapper(args).create()
     llm_chain = LLMChain(llm=llm, prompt=chat_prompt_template)
     
-    with get_openai_callback() as cb:
-        architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
-        
-        list_acceptance_criteria_plan = llm_chain.run(user_story_doc=str(user_story_doc[0].page_content), 
-            components="\n".join(components_for_user_story),
-            arch_doc=architecture_docs_loaded,
-            arch_tm_doc=str(architecture_tm_doc[0].page_content))
-        logging.debug(cb)
+    architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
+    
+    list_acceptance_criteria_plan = llm_chain.invoke(input={"user_story_doc":str(user_story_doc[0].page_content), 
+        "components":"\n".join(components_for_user_story),
+        "arch_doc":architecture_docs_loaded,
+        "arch_tm_doc":str(architecture_tm_doc[0].page_content)})
     
     logging.info("finished waiting on llm response")
     
-    messages.append(AIMessage(content=list_acceptance_criteria_plan))
+    messages.append(AIMessage(content=list_acceptance_criteria_plan["text"]))
     messages.append(HumanMessagePromptTemplate(prompt=load_prompt(f"{args.template_dir}/user_story_final_go.yaml")))
     chat_prompt_template = ChatPromptTemplate.from_messages(messages)
     
@@ -83,20 +81,18 @@ def analyze_user_story(args, input: Path, architecture_inputs: [Path], architect
     
     parser = PydanticOutputParser(pydantic_object=AcceptanceCriteriaList)
     
-    with get_openai_callback() as cb:
-        architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
-        
-        ret = llm_chain.run(user_story_doc=str(user_story_doc[0].page_content), 
-            components="\n".join(components_for_user_story),
-            arch_doc=architecture_docs_loaded,
-            arch_tm_doc=str(architecture_tm_doc[0].page_content),
-            format_instructions=parser.get_format_instructions())
-        logging.debug(cb)
+    architecture_docs_loaded = "\n\n".join([str(d.page_content) for d in architecture_docs_all])
+    
+    ret = llm_chain.invoke(input={"user_story_doc":str(user_story_doc[0].page_content), 
+        "components":"\n".join(components_for_user_story),
+        "arch_doc":architecture_docs_loaded,
+        "arch_tm_doc":str(architecture_tm_doc[0].page_content),
+        "format_instructions":parser.get_format_instructions()})
     
     logging.info("finished waiting on llm response")
     
     fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
-    gen_components_all = fixing_parser.parse(ret)
+    gen_components_all = fixing_parser.parse(ret["text"])
     
     _processJsonToMarkdownAndSave(gen_components_all.components, output)
     
@@ -132,12 +128,10 @@ def _list_components_for_user_story(args, user_story_doc) -> str:
         llm_chain=llm_chain, document_variable_name="text"
     )
 
-    with get_openai_callback() as cb:
-        ret = stuff_chain.run(user_story_doc)
-        logging.debug(cb)
+    ret = stuff_chain.invoke(user_story_doc)
     
     fixing_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
-    gen_components = fixing_parser.parse(ret)
+    gen_components = fixing_parser.parse(ret["output_text"])
     logging.info("finished waiting on llm response - components")
     logging.debug(f"got following components: {gen_components}")
     
