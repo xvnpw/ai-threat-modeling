@@ -1,3 +1,5 @@
+⚠️ This repository is deprecated and will be archived. All prompts moved to: https://github.com/xvnpw/fabric-agent-action
+
 # AI Threat Modeling
 
 [![Python package](https://github.com/xvnpw/ai-threat-modeling/actions/workflows/build.yaml/badge.svg)](https://github.com/xvnpw/ai-threat-modeling/actions/workflows/build.yaml)
